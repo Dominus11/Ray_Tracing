@@ -4,13 +4,36 @@
 
 #include <iostream>
 
+
+double hit_sphere(const Point3& centre, double radius, const Ray& ray){
+        auto a = dot(ray.direction(),ray.direction());
+        auto h = dot((ray.origin() - centre), ray.direction());
+        auto c = (ray.origin() - centre).length_squared() - radius * radius;
+        auto D = h*h - a*c;
+
+        if (D < 0){
+            return -1.0;
+        } else {
+            return (-h - std::sqrt(D))/a;
+        }
+}
+
 Color ray_color(const Ray& r){
+    auto t = hit_sphere(Point3(0,0,-1), 0.5, r);
+
+    if (t > 0.0){
+        Vec3 N = unit(r.at(t) - Vec3(0,0,-1));
+        return 0.5*Color(N.x()+1, N.y()+1, N.z()+1);
+    }
+
+
     Vec3 dir = unit(r.direction());
     auto a = 0.5*(dir.y() + 1.0);
     // std::cout << a << '\n';
     //exit(0);
     return (1.0-a)* Color(1.0, 1.0, 1.0) + a*Color(0.5, 0.7, 1.0);
 }
+
 
 int main(){
 
