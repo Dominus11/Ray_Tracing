@@ -1,39 +1,18 @@
-#include "vec3.h"
-#include "color.h"
-#include "ray.h"
+#include "common.h"
+#include "./Primitives/sphere.h"
+#include "./Primitives/hittable_list.h"
 
-#include <iostream>
+Color ray_color(const Ray& r, const Hittable& scene){
+    HitRecord rec = HitRecord();
 
-
-double hit_sphere(const Point3& centre, double radius, const Ray& ray){
-        auto a = dot(ray.direction(),ray.direction());
-        auto h = dot((ray.origin() - centre), ray.direction());
-        auto c = (ray.origin() - centre).length_squared() - radius * radius;
-        auto D = h*h - a*c;
-
-        if (D < 0){
-            return -1.0;
-        } else {
-            return (-h - std::sqrt(D))/a;
-        }
-}
-
-Color ray_color(const Ray& r){
-    auto t = hit_sphere(Point3(0,0,-1), 0.5, r);
-
-    if (t > 0.0){
-        Vec3 N = unit(r.at(t) - Vec3(0,0,-1));
-        return 0.5*Color(N.x()+1, N.y()+1, N.z()+1);
+    if (scene.hit(r, Interval(0, infinity), rec)){
+        return 0.5*(rec.normal + Color(1,1,1));
     }
-
 
     Vec3 dir = unit(r.direction());
     auto a = 0.5*(dir.y() + 1.0);
-    // std::cout << a << '\n';
-    //exit(0);
     return (1.0-a)* Color(1.0, 1.0, 1.0) + a*Color(0.5, 0.7, 1.0);
 }
-
 
 int main(){
 
@@ -58,6 +37,14 @@ int main(){
     
     std::cout << "P3\n" << img_width << ' ' << img_height << "\n255\n";
 
+    // Scene Generation
+
+    
+    HittableList scene = HittableList();
+
+    scene.add(make_shared<Sphere>(Point3(0,0,-1), 0.5));
+    scene.add(make_shared<Sphere>(Point3(0,-100.5,-1), 100));
+
     // Rendering
 
     for (int j = 0; j < img_height; j++){
@@ -65,7 +52,7 @@ int main(){
         for (int i = 0; i < img_width; i++){
             Vec3 ray_dir = ul_pixel_centre + Vec3(i*du, - j*dv, 0.0) - camera_centre;
             Ray r = Ray(camera_centre, ray_dir);
-            Color pixel_col = ray_color(r);
+            Color pixel_col = ray_color(r, scene);
             write_color(std::cout, pixel_col);
         }
     }

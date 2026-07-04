@@ -1,8 +1,7 @@
 #ifndef VEC3_H
 #define VEC3_H
 
-#include <cmath>
-#include <iostream>
+#include "common.h"
 
 class Vec3 {
     double e[3];
@@ -62,6 +61,10 @@ inline Vec3 operator+(Vec3 v1, Vec3 v2){
 
 inline Vec3 operator-(Vec3 v1, Vec3 v2){
     return Vec3(v1[0] - v2[0], v1[1] - v2[1], v1[2] - v2[2]);
+}
+
+inline Vec3 operator-(Vec3 v) {
+    return Vec3(-v[0], -v[1], -v[2]);
 }
 
 /* Is this one even useful??
