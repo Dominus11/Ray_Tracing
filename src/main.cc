@@ -11,8 +11,9 @@ int main(){
     auto viewport_height = 2.0;
     auto focal_length = 1.0; 
     Point3 camera_centre = Point3();
+    int samples_per_pixel = 10;
 
-    Camera camera = Camera(img_width, aspect_ratio, viewport_height, focal_length, camera_centre);
+    Camera camera = Camera(img_width, aspect_ratio, viewport_height, focal_length, camera_centre, samples_per_pixel);
 
     // Scene Initialisation
 
