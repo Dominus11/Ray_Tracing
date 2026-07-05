@@ -73,7 +73,7 @@ class Camera {
         // meaning that the reflected ray could re-intersect with the surface.
         if (scene.hit(r, Interval(0.001, infinity), rec)){
             Vec3 dir = random_on_hemisphere(rec.normal) + random_unit_vector();
-            return 0.5*ray_color(Ray(rec.point, dir), depth - 1, scene);
+            return 0.9*ray_color(Ray(rec.point, dir), depth - 1, scene);
         }
 
         Vec3 dir = unit(r.direction());
