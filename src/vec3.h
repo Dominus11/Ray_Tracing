@@ -55,6 +55,11 @@ class Vec3 {
         return Vec3(random_double(min, max), random_double(min, max), random_double(min, max));
     }
 
+    bool near_zero(){
+        auto s = 1e-8;
+        return (std::fabs(e[0]) < s) && (std::fabs(e[1]) < s) && (std::fabs(e[2]) < s);
+    }
+
 };
 
 using Point3 = Vec3;
@@ -71,14 +76,11 @@ inline Vec3 operator-(Vec3 v1, Vec3 v2){
     return Vec3(v1[0] - v2[0], v1[1] - v2[1], v1[2] - v2[2]);
 }
 
-/*inline Vec3 operator-(Vec3 v) {
-    return Vec3(-v[0], -v[1], -v[2]);
-}*/
-
-/* Is this one even useful??
-inline vec3 operator*(vec3 v1, vec3 v2){
-    return vec3(v1[0] * v2[0], v1[1] * v2[1], v1[2] * v2[2]);
-} */
+// Is this one even useful?? 
+// Yes - Albedo/attenuation 
+inline Vec3 operator*(Vec3 v1, Vec3 v2){
+    return Vec3(v1[0] * v2[0], v1[1] * v2[1], v1[2] * v2[2]);
+} 
 
 inline Vec3 operator*(double t, Vec3 v){
     return Vec3(t*v[0], t*v[1], t*v[2]);
@@ -89,8 +91,8 @@ inline Vec3 operator*(Vec3 v, double t){
 }
 
 /* Is this useful either? 
-inline vec3 operator/(vec3 v1, vec3 v2){
-    return vec3(v1[0] / v2[0], v1[1] / v2[1], v1[2] / v2[2]);
+inline Vec3 operator/(Vec3 v1, Vec3 v2){
+    return Vec3(v1[0] / v2[0], v1[1] / v2[1], v1[2] / v2[2]);
 } */
 
 inline Vec3 operator/(Vec3 v, double t){
@@ -138,6 +140,11 @@ inline Vec3 random_on_hemisphere(const Vec3& normal){
     } else {
         return -on_sphere;
     }
+}
+
+inline Vec3 reflect(const Vec3& v, const Vec3& n){
+    // Assume n is normalised
+    return v - 2 * dot(v, n) * n;
 }
 
 #endif

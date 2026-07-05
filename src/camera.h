@@ -5,6 +5,7 @@
 #include "common.h"
 #include "Primitives/hittable.h"
 #include "Primitives/hittable_list.h"
+#include "Materials/material.h"
 
 class Camera {
     public:
@@ -72,8 +73,13 @@ class Camera {
         // 0.001 prevents 'shadow acne', where a ray's intersection point may be slightly off the surface due to floating point errors, 
         // meaning that the reflected ray could re-intersect with the surface.
         if (scene.hit(r, Interval(0.001, infinity), rec)){
-            Vec3 dir = random_on_hemisphere(rec.normal) + random_unit_vector();
-            return 0.9*ray_color(Ray(rec.point, dir), depth - 1, scene);
+            Ray scattered;
+            Color attenuation;
+
+            if (rec.material->scatter(r, rec, attenuation, scattered)){
+                return attenuation * ray_color(scattered, depth - 1, scene);
+            }
+            return Color(0,0,0);
         }
 
         Vec3 dir = unit(r.direction());

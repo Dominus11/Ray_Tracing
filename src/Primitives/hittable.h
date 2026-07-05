@@ -3,10 +3,16 @@
 
 #include "../common.h"
 
+// Place here to solve circular reference issue
+// This needs Material for the shared ptr field, but only the class
+// Material needs a HitRecord as an argument to update on scattering
+class Material;
+
 class HitRecord {
     public:
         Point3 point;
         Vec3 normal;
+        shared_ptr<Material> material;
         double t = -1.0;
         bool front_face;
 
