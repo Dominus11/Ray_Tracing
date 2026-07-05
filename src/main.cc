@@ -7,13 +7,14 @@ int main(){
     // Camera Initialisation
 
     auto aspect_ratio = 16.0/9.0;
-    int16_t img_width = 256; 
+    int16_t img_width = 400; 
     auto viewport_height = 2.0;
     auto focal_length = 1.0; 
     Point3 camera_centre = Point3();
-    int samples_per_pixel = 10;
+    int samples_per_pixel = 100;
+    int max_depth = 50;
 
-    Camera camera = Camera(img_width, aspect_ratio, viewport_height, focal_length, camera_centre, samples_per_pixel);
+    Camera camera = Camera(img_width, aspect_ratio, viewport_height, focal_length, camera_centre, samples_per_pixel, max_depth);
 
     // Scene Initialisation
 

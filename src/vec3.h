@@ -15,7 +15,7 @@ class Vec3 {
     double y() const { return e[1]; }
     double z() const { return e[2]; }
 
-    Vec3 operator-(){return Vec3(-e[0], -e[1], -e[2]); }
+    Vec3 operator-() const {return Vec3(-e[0], -e[1], -e[2]); }
     double operator[](int i){return e[i];}
 
     Vec3& operator=(Vec3 v){
@@ -47,6 +47,14 @@ class Vec3 {
         return std::sqrt(e[0]*e[0] + e[1]*e[1] + e[2]*e[2]);
     }
 
+    static Vec3 random_vec(){
+        return Vec3(random_double(), random_double(), random_double());
+    }
+
+    static Vec3 random_vec(double min, double max){
+        return Vec3(random_double(min, max), random_double(min, max), random_double(min, max));
+    }
+
 };
 
 using Point3 = Vec3;
@@ -63,9 +71,9 @@ inline Vec3 operator-(Vec3 v1, Vec3 v2){
     return Vec3(v1[0] - v2[0], v1[1] - v2[1], v1[2] - v2[2]);
 }
 
-inline Vec3 operator-(Vec3 v) {
+/*inline Vec3 operator-(Vec3 v) {
     return Vec3(-v[0], -v[1], -v[2]);
-}
+}*/
 
 /* Is this one even useful??
 inline vec3 operator*(vec3 v1, vec3 v2){
@@ -105,6 +113,31 @@ inline Vec3 cross (Vec3 v1, Vec3 v2){
 
 inline Vec3 unit(Vec3 v){
     return v / v.length();
+}
+
+inline Vec3 random_unit_vector() {
+
+    // Rejection sampling used bc it's
+    // faster than deterministic method on average 
+    // bc sin, cos take loads of operations
+
+    while (true) {
+        auto p = Vec3::random_vec(-1,1);
+        auto lensq = p.length_squared();
+        // 1e-160 check to avoid normalisations blowing up to ±infty
+        if (1e-160 < lensq && lensq <= 1)
+            return p / sqrt(lensq);
+    }
+}
+
+inline Vec3 random_on_hemisphere(const Vec3& normal){
+    Vec3 on_sphere = random_unit_vector();
+
+    if (dot(on_sphere, normal) > 0.0){
+        return on_sphere;
+    } else {
+        return -on_sphere;
+    }
 }
 
 #endif

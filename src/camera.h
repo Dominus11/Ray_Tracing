@@ -12,12 +12,14 @@ class Camera {
         int16_t img_width;   // Rendered image width in pixels
         double focal_length; // Camera focal length - distance to viewport
         int samps_per_pixel; // Number of samples taken for anti-aliasing per-pixel
+        int max_depth;       // Maximum recursion depth for indirect illumination
 
-    Camera(int16_t img_width, double aspect_ratio, double viewport_height, double f, const Point3& centre, int samples):  
+    Camera(int16_t img_width, double aspect_ratio, double viewport_height, double f, const Point3& centre, int samples, int max_depth):  
         aspect_ratio(aspect_ratio), 
         img_width(img_width),
         focal_length(f),
         samps_per_pixel(samples),
+        max_depth(max_depth),
         centre(centre)
     {
         img_height = int(img_width/aspect_ratio);
@@ -41,7 +43,7 @@ class Camera {
                 Color pixel_col(0,0,0);
                 for (int n = 0; n < samps_per_pixel; n++){
                     Ray r = get_ray(i,j);
-                    pixel_col += ray_color(r, scene);
+                    pixel_col += ray_color(r, max_depth, scene);
                 }
 
                 write_color(std::cout, pixel_col/samps_per_pixel);
@@ -60,11 +62,18 @@ class Camera {
         Point3 ul_pixel_centre;     // Coordinates for the centre of the upper-left pixel on the viewport
 
 
-    Color ray_color(const Ray& r, const Hittable& scene) const{
+    Color ray_color(const Ray& r, int depth, const Hittable& scene) const{
         HitRecord rec = HitRecord();
 
-        if (scene.hit(r, Interval(0, infinity), rec)){
-            return 0.5*(rec.normal + Color(1,1,1));
+        if (depth <= 0){
+            return Color(0,0,0);
+        }
+
+        // 0.001 prevents 'shadow acne', where a ray's intersection point may be slightly off the surface due to floating point errors, 
+        // meaning that the reflected ray could re-intersect with the surface.
+        if (scene.hit(r, Interval(0.001, infinity), rec)){
+            Vec3 dir = random_on_hemisphere(rec.normal) + random_unit_vector();
+            return 0.5*ray_color(Ray(rec.point, dir), depth - 1, scene);
         }
 
         Vec3 dir = unit(r.direction());
