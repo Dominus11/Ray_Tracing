@@ -147,4 +147,12 @@ inline Vec3 reflect(const Vec3& v, const Vec3& n){
     return v - 2 * dot(v, n) * n;
 }
 
+// Should this be in the dielectrics section purely..?
+inline Vec3 refract(const Vec3& r_in, const Vec3& n, double etai_over_etat){
+    auto cos_theta = std::fmin(dot(-r_in, n), 1.0);
+    Vec3 r_out_perp = etai_over_etat * (r_in + cos_theta * n);
+    Vec3 r_out_parallel = -std::sqrt(std::fabs(1-r_out_perp.length_squared())) * n;
+    return r_out_perp + r_out_parallel;
+}
+
 #endif

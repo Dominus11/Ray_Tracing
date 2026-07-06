@@ -12,5 +12,6 @@ class Material {
 
 #include "lambertian.h"
 #include "metal.h"
+#include "dielectrics.h"
 
 #endif
