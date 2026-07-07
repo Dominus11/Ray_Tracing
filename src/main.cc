@@ -7,19 +7,33 @@
 int main(){
     // Camera Initialisation
 
-    auto aspect_ratio = 16.0/9.0;
-    int16_t img_width = 400; 
-    auto viewport_height = 2.0;
-    auto focal_length = 1.0; 
-    Point3 camera_centre = Point3();
-    int samples_per_pixel = 100;
-    int max_depth = 50;
+    Camera camera;
 
-    Camera camera = Camera(img_width, aspect_ratio, viewport_height, focal_length, camera_centre, samples_per_pixel, max_depth);
+    camera.aspect_ratio = 16.0/9.0;
+    camera.img_width = 400;
+    camera.samps_per_pixel = 100;
+    camera.max_depth = 50;
+    
+    camera.vfov = 20;
+    camera.lookfrom = Point3(-2,2,1);
+    camera.lookat = Point3(0,0,-1);
+    camera.vup = Vec3(0,1,0);
+
+    camera.initialise();
 
     // Scene Initialisation
 
     HittableList scene = HittableList();
+
+    /*
+    auto R = std::cos(pi/4);
+
+    auto material_left  = make_shared<Lambertian>(Color(0,0,1));
+    auto material_right = make_shared<Lambertian>(Color(1,0,0));
+
+    scene.add(make_shared<Sphere>(Point3(-R, 0, -1), R, material_left));
+    scene.add(make_shared<Sphere>(Point3( R, 0, -1), R, material_right));
+    */
 
     auto material_ground = make_shared<Lambertian>(Color(0.8, 0.8, 0.0));
     auto material_center = make_shared<Lambertian>(Color(0.1, 0.2, 0.5));

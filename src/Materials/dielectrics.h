@@ -38,7 +38,6 @@ class Dielectric : public Material{
             return r0 + (1-r0)*std::pow((1 - cosine),5);
         }
 
-
 };
 
 

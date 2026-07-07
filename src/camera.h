@@ -11,25 +11,42 @@ class Camera {
     public:
         double aspect_ratio; // Ratio of img_width/img_height
         int16_t img_width;   // Rendered image width in pixels
-        double focal_length; // Camera focal length - distance to viewport
         int samps_per_pixel; // Number of samples taken for anti-aliasing per-pixel
         int max_depth;       // Maximum recursion depth for indirect illumination
+        double vfov;         // The vertical viewing angle
+        Point3 lookfrom;     // Viewport centre, point camera is looking from
+        Point3 lookat;       // Point camera is looking at
+        Vec3 vup;
 
-    Camera(int16_t img_width, double aspect_ratio, double viewport_height, double f, const Point3& centre, int samples, int max_depth):  
-        aspect_ratio(aspect_ratio), 
-        img_width(img_width),
-        focal_length(f),
-        samps_per_pixel(samples),
-        max_depth(max_depth),
-        centre(centre)
-    {
+    void initialise(){
+
+        // Image details
         img_height = int(img_width/aspect_ratio);
         img_height = (img_height < 1) ? 1: img_height;
+
+
+        // Viewport dimensions
+        auto theta = degrees_to_radians(vfov);
+        auto h = std::tan(theta/2);
+        auto focal_length = (lookfrom - lookat).length();
+        auto viewport_height = 2*h*focal_length;
         auto viewport_width = viewport_height * (double(img_width) / img_height);
-        viewport_ul_corner = centre + Vec3(-viewport_width, viewport_height, 0)/2 - Vec3(0,0, focal_length);
-        du = viewport_width/img_width;
-        dv = viewport_height/img_height;
-        ul_pixel_centre = viewport_ul_corner + Vec3(0.5*du, -0.5*dv, 0.0);
+
+        // Camera frame of reference
+        centre = lookfrom;
+        w = - unit(lookat - lookfrom);
+        u = unit(cross(vup,w));
+        v = cross(w,u);
+
+        // Viewport coordinates
+        Vec3 view_u = viewport_width * u;
+        Vec3 view_v = viewport_height * -v;
+        viewport_ul_corner = centre - (focal_length*w) - (view_u + view_v)/2; 
+
+        // Subdivision into pixels
+        du = view_u/img_width;
+        dv = view_v/img_height;
+        ul_pixel_centre = viewport_ul_corner + (du+dv)/2;
 
         std::cout << "P3\n" << img_width << ' ' << img_height << "\n255\n";
     }
@@ -59,7 +76,8 @@ class Camera {
         int16_t img_height;         // Rendered image height in pixels
         Point3 centre;              // Coordinates for the centre of the camera lens
         Point3 viewport_ul_corner;  // Coordinates for the upper-left corner of the viewport
-        double du, dv;              // Step sizes bewteen connected pixels 
+        Vec3 u,v,w;                 // Basis vectors in the camera's reference frame
+        Vec3 du, dv;                // Steps bewteen connected pixels 
         Point3 ul_pixel_centre;     // Coordinates for the centre of the upper-left pixel on the viewport
 
 
@@ -89,7 +107,7 @@ class Camera {
 
     Ray get_ray(int i,int j) const{
         Vec3 offset = sample_pixel_offset();
-        Vec3 ray_dir = ul_pixel_centre + Vec3((i+offset.x())*du, - (j+offset.y())*dv, 0.0) - centre;
+        Vec3 ray_dir = ul_pixel_centre + + (i+offset.x())*du + (j+offset.y())*dv - centre;
         return Ray(centre, ray_dir);
     }
 
