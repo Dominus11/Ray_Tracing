@@ -16,7 +16,9 @@ class Camera {
         double vfov;         // The vertical viewing angle
         Point3 lookfrom;     // Viewport centre, point camera is looking from
         Point3 lookat;       // Point camera is looking at
-        Vec3 vup;
+        Vec3 vup;            // 'Up' direction in camera frame
+        double defocus_angle;
+        double focus_dist;
 
     void initialise(){
 
@@ -28,8 +30,7 @@ class Camera {
         // Viewport dimensions
         auto theta = degrees_to_radians(vfov);
         auto h = std::tan(theta/2);
-        auto focal_length = (lookfrom - lookat).length();
-        auto viewport_height = 2*h*focal_length;
+        auto viewport_height = 2*h*focus_dist;
         auto viewport_width = viewport_height * (double(img_width) / img_height);
 
         // Camera frame of reference
@@ -38,10 +39,15 @@ class Camera {
         u = unit(cross(vup,w));
         v = cross(w,u);
 
+        // Defocus Disk Dimensions
+        auto defocus_radius = focus_dist * std::tan(degrees_to_radians(defocus_angle)/2);
+        lens_u = u*defocus_radius;
+        lens_v = v*defocus_radius;
+
         // Viewport coordinates
         Vec3 view_u = viewport_width * u;
         Vec3 view_v = viewport_height * -v;
-        viewport_ul_corner = centre - (focal_length*w) - (view_u + view_v)/2; 
+        viewport_ul_corner = centre - (focus_dist*w) - (view_u + view_v)/2; 
 
         // Subdivision into pixels
         du = view_u/img_width;
@@ -79,6 +85,7 @@ class Camera {
         Vec3 u,v,w;                 // Basis vectors in the camera's reference frame
         Vec3 du, dv;                // Steps bewteen connected pixels 
         Point3 ul_pixel_centre;     // Coordinates for the centre of the upper-left pixel on the viewport
+        Vec3 lens_u, lens_v;        // Vectors indicating horizontal, vertical semi-axes of lens
 
 
     Color ray_color(const Ray& r, int depth, const Hittable& scene) const{
@@ -107,12 +114,19 @@ class Camera {
 
     Ray get_ray(int i,int j) const{
         Vec3 offset = sample_pixel_offset();
-        Vec3 ray_dir = ul_pixel_centre + + (i+offset.x())*du + (j+offset.y())*dv - centre;
-        return Ray(centre, ray_dir);
+        Vec3 pix_sample = ul_pixel_centre + + (i+offset.x())*du + (j+offset.y())*dv;
+        Vec3 lens_point = (defocus_angle <= 0) ? centre : sample_defocus_disk();
+        Vec3 ray_dir = pix_sample - lens_point;
+        return Ray(lens_point, ray_dir);
     }
 
     Vec3 sample_pixel_offset() const{
         return Vec3(random_double()-0.5, random_double()-0.5, 0);
+    }
+
+    Point3 sample_defocus_disk() const {
+        auto p = random_on_unit_disk();
+        return centre + p.x()*lens_u + p.y()*lens_v;
     }
 
 };
