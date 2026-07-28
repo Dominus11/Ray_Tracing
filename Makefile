@@ -22,7 +22,7 @@ CXXFLAGS := $(STD) $(WARN) $(OPT)
 SRC_DIR  := src
 BUILD_DIR := build/$(BUILD)
 TARGET   := raytracer
-OUTPUT   := img.ppm
+OUTPUT   := /results/raw/img.ppm
 
 # ─── Sources & objects ──────────────────────────────────────────────────────
 SRCS := $(wildcard $(SRC_DIR)/*.cc)

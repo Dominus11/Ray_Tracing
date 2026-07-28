@@ -1,2 +1,5 @@
 build/
 raytracer
+results/raw
+.DS_Store
+img_conversion.zsh

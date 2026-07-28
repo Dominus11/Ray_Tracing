@@ -15,6 +15,14 @@ To build the renderer and get it to render the image shown beneath (the cover of
 
 For now, to create your own scenes, go into `main.cc` and edit the 'Scene Initialisation' part of the code. (I will improve the I/O soon!)
 
+--- 
+
+## Results
+
+For more, see the `results/clean` folder!
+
+![Book 1 Cover](./results/clean/book1/img22.png)
+
 ---
 
 ## Upcoming Extensions
@@ -23,6 +31,8 @@ Some extensions I would like to try:
 
 - Book 2 (notably distribution over time, light sources and BVH)
 - Book 3 (notably the content on importance sampling for indirect illumination)
-- Improved user-facing I/O via the command-line
+- Improved user-facing I/O 
+    - Command Line Use
+    - User-defined geometries?
 - Metal Acceleration
 - Import geometries from other sources (libgl?)
