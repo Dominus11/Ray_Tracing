@@ -117,7 +117,8 @@ class Camera {
         Vec3 pix_sample = ul_pixel_centre + + (i+offset.x())*du + (j+offset.y())*dv;
         Vec3 lens_point = (defocus_angle <= 0) ? centre : sample_defocus_disk();
         Vec3 ray_dir = pix_sample - lens_point;
-        return Ray(lens_point, ray_dir);
+        double time = random_double();
+        return Ray(lens_point, ray_dir, time);
     }
 
     Vec3 sample_pixel_offset() const{

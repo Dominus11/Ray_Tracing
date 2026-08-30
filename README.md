@@ -2,7 +2,7 @@
 
 This is an implementation of a ray-tracer, currently following the [Ray-Tracing In One Weekend(RTIOW)](https://raytracing.github.io/) book series. I was inspired by my courses [Intro To Graphics](https://www.cl.cam.ac.uk/teaching/2425/Graphics/) and [Further Graphics](https://www.cl.cam.ac.uk/teaching/2526/FGraphics/) and wanted to start coding up some of the concepts!
 
----
+
 
 ## How To Use
 
@@ -15,7 +15,7 @@ To build the renderer and get it to render the image shown beneath (the cover of
 
 For now, to create your own scenes, go into `main.cc` and edit the 'Scene Initialisation' part of the code. (I will improve the I/O soon!)
 
---- 
+
 
 ## Results
 
@@ -23,7 +23,7 @@ For more, see the `results/clean` folder!
 
 ![Book 1 Cover](./results/clean/book1/img22.png)
 
----
+
 
 ## Upcoming Extensions
 
