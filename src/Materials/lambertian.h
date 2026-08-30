@@ -16,7 +16,7 @@ class Lambertian : public Material {
                 scatter_dir = record.normal;
             }
 
-            scattered = Ray(record.point, scatter_dir);
+            scattered = Ray(record.point, scatter_dir, r_in.time());
             attenuation = albedo;
             return true;
         }

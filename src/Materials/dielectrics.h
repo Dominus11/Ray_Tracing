@@ -23,7 +23,7 @@ class Dielectric : public Material{
                 scattered_dir = refract(unit_direction, record.normal, ri);
             }
 
-            r_out = Ray(record.point, scattered_dir);
+            r_out = Ray(record.point, scattered_dir, r_in.time());
             
             return true;
         }
