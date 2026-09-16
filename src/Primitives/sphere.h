@@ -7,6 +7,7 @@ class Sphere: public Hittable {
     public:
 
         Sphere(const Point3& static_centre, const double r, shared_ptr<Material> mat): centre(static_centre, Vec3(0,0,0)), radius(std::fmax(0, r)), material(mat) {}
+        // Assumes a sphere moving from point c1 to c2 at constant velocity within a single shutter window
         Sphere(const Point3& c1, const Point3&c2, const double r, shared_ptr<Material> mat): centre(c1, c2 - c1), radius(std::fmax(0,r)), material(mat) {}
 
         virtual bool hit(const Ray& ray, Interval ray_t, HitRecord& record) const override{
